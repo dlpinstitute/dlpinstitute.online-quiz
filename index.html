@@ -60,7 +60,22 @@ button {
 
 <button onclick="startQuiz()">Start Quiz</button>
 
-<div id="timer"></div>
+function startTimer(){
+timer=setInterval(()=>{
+let m=Math.floor(totalTime/60);
+let s=totalTime%60;
+
+document.getElementById("timer").innerText =
+"Time Left: " + m + ":" + (s<10?"0"+s:s);
+
+totalTime--;
+
+if(totalTime<0){
+clearInterval(timer);
+submitQuiz();
+}
+},1000);
+}
 <div id="progress"></div>
 <div id="questionBox"></div>
 
