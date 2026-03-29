@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<title>DLP Institute Quiz</title>
+
+<style>
+body {
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #1e3c72, #2a5298);
+    margin: 0;
+    color: #fff;
+}
+.header {
+    text-align: center;
+    padding: 15px;
+    background: #00000070;
+    font-size: 22px;
+    font-weight: bold;
+}
+.quiz-container {
+    background: #fff;
+    color: #000;
+    max-width: 700px;
+    margin: 30px auto;
+    padding: 25px;
+    border-radius: 15px;
+}
+.option {
+    display: block;
+    padding: 10px;
+    margin: 6px 0;
+    background: #f1f1f1;
+    border-radius: 8px;
+}
+button {
+    background: #1e3c72;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 8px;
+}
+#timer { color: red; font-weight: bold; }
+</style>
+
+</head>
+
+<body>
+
+<div class="header">🎓 DLP Institute Quiz</div>
+
+<div class="quiz-container">
+
+<label>👤 Name:</label> <input type="text" id="name"><br><br>
+
+<label>🏙 City:</label> <input type="text" id="city"><br><br>
+
+<button onclick="startQuiz()">Start Quiz</button>
+
+<div id="timer"></div>
+<div id="questionBox"></div>
+<div id="result"></div>
+
+</div>
+
+<script>
+
+const quizData = [
+{q:"रासायनिक अभिक्रिया किसे कहते हैं?",o:["भौतिक परिवर्तन","नया पदार्थ बनना","ताप बढ़ना","रंग बदलना"],a:1},
+{q:"Mg ribbon जलाने पर क्या बनता है?",o:["MgCl₂","MgO","MgSO₄","MgCO₃"],a:1},
+{q:"अभिकारक कहाँ लिखे जाते हैं?",o:["दाईं ओर","बाईं ओर","ऊपर","नीचे"],a:1},
+{q:"संतुलित समीकरण में क्या समान होता है?",o:["रंग","आयतन","परमाणुओं की संख्या","ताप"],a:2},
+{q:"Zn + HCl → ?",o:["ZnCl₂ + H₂","ZnO + H₂","Zn + Cl₂","ZnH₂"],a:0},
+
+{q:"संयोजन अभिक्रिया में उत्पादों की संख्या?",o:["1","2","3","4"],a:0},
+{q:"C + O₂ → CO₂ किस प्रकार की अभिक्रिया?",o:["अपघटन","संयोजन","विस्थापन","द्विविस्थापन"],a:1},
+{q:"CaO + H₂O → ?",o:["CaCO₃","Ca(OH)₂","CaCl₂","CaSO₄"],a:1},
+{q:"ऊष्माक्षेपी अभिक्रिया?",o:["ऊष्मा अवशोषित","ऊष्मा उत्पन्न","गैस नहीं","रंग नहीं"],a:1},
+{q:"अपघटन अभिक्रिया?",o:["1→कई","कई→1","नहीं","गैस नहीं"],a:0},
+
+{q:"CaCO₃ → CaO + CO₂ किस प्रकार की अभिक्रिया?",o:["संयोजन","अपघटन","विस्थापन","द्विविस्थापन"],a:1},
+{q:"जल का विद्युत अपघटन?",o:["थर्मोलिसिस","इलेक्ट्रोलिसिस","फोटोलिसिस","विस्थापन"],a:1},
+{q:"प्रकाश अपघटन?",o:["थर्मोलिसिस","इलेक्ट्रोलिसिस","फोटोलिसिस","ऑक्सीकरण"],a:2},
+{q:"Fe + CuSO₄ → ?",o:["संयोजन","अपघटन","विस्थापन","द्विविस्थापन"],a:2},
+{q:"अधिक क्रियाशील धातु क्या करती है?",o:["स्वयं हटती","कम को हटाती","गैस बनाती","ताप घटाती"],a:1},
+
+{q:"Na₂SO₄ + BaCl₂ किस प्रकार की अभिक्रिया?",o:["संयोजन","अपघटन","विस्थापन","द्विविस्थापन"],a:3},
+{q:"BaSO₄ का रंग?",o:["पीला","सफेद","हरा","काला"],a:1},
+{q:"ऑक्सीकरण क्या है?",o:["O हटना","O जुड़ना","e पाना","ताप कम"],a:1},
+{q:"अपचयन क्या है?",o:["O जुड़ना","O हटना","e खोना","रंग"],a:1},
+{q:"इलेक्ट्रॉन खोना?",o:["अपचयन","ऑक्सीकरण","संयोजन","अपघटन"],a:1},
+
+{q:"इलेक्ट्रॉन प्राप्त करना?",o:["ऑक्सीकरण","अपचयन","विस्थापन","संयोजन"],a:1},
+{q:"जंग लगना?",o:["अपचयन","ऑक्सीकरण","संयोजन","अपघटन"],a:1},
+{q:"Fe₂O₃ क्या है?",o:["जंग","गैस","अम्ल","लवण"],a:0},
+{q:"ZnO + C → Zn?",o:["ऑक्सीकरण","अपचयन","विस्थापन","संयोजन"],a:1},
+{q:"C का क्या होता है?",o:["अपचयन","ऑक्सीकरण","संयोजन","विघटन"],a:1},
+
+{q:"अपचायक?",o:["ऑक्सीकरण","अपचयन","गैस","ताप"],a:1},
+{q:"ऑक्सीकारक?",o:["अपचयन","ऑक्सीकरण","गैस","रंग"],a:1},
+{q:"CO₂ बनने पर?",o:["प्रकाश","ऊष्मा","ध्वनि","कुछ नहीं"],a:1},
+{q:"श्वसन?",o:["ऊष्माशोषी","ऊष्माक्षेपी","अपघटन","संयोजन"],a:1},
+{q:"CH₄ + O₂?",o:["विस्थापन","दहन","अपघटन","द्विविस्थापन"],a:1},
+
+{q:"FeSO₄ गरम करने पर रंग?",o:["नीला→हरा","हरा→भूरा","काला→सफेद","पीला→लाल"],a:1},
+{q:"SO₂ की गंध?",o:["मीठी","तीक्ष्ण","सुगंध","नहीं"],a:1},
+{q:"AgCl प्रकाश में?",o:["सफेद","काला","धूसर","नीला"],a:2},
+{q:"AgCl → Ag + Cl₂?",o:["संयोजन","अपघटन","विस्थापन","द्विविस्थापन"],a:1},
+{q:"जंग के लिए आवश्यक?",o:["O₂","H₂O","दोनों","CO₂"],a:2},
+
+{q:"संक्षारण?",o:["दही","जंग","उबलना","घुलना"],a:1},
+{q:"विकृतिगंधिता?",o:["धातु","तेल","जल","गैस"],a:1},
+{q:"एंटीऑक्सीडेंट?",o:["बढ़ाते","रोकते","ताप","गैस"],a:1},
+{q:"BHA BHT क्या हैं?",o:["अम्ल","क्षार","एंटीऑक्सीडेंट","लवण"],a:2},
+{q:"नाइट्रोजन का उपयोग?",o:["स्वाद","ऑक्सीकरण रोकना","रंग","गैस"],a:1},
+
+{q:"संतुलन का नियम?",o:["ऊर्जा","द्रव्यमान","गति","ताप"],a:1},
+{q:"(s) का अर्थ?",o:["गैस","द्रव","ठोस","विलयन"],a:2},
+{q:"(l) का अर्थ?",o:["ठोस","द्रव","गैस","विलयन"],a:1},
+{q:"(g) का अर्थ?",o:["गैस","द्रव","ठोस","विलयन"],a:0},
+{q:"(aq) का अर्थ?",o:["गैस","ठोस","जलीय","द्रव"],a:2},
+
+{q:"Fe + H₂O?",o:["संयोजन","विस्थापन","अपघटन","द्विविस्थापन"],a:1},
+{q:"Mg + O₂?",o:["अपघटन","संयोजन","विस्थापन","द्विविस्थापन"],a:1},
+{q:"2H₂ + O₂?",o:["संयोजन","अपघटन","विस्थापन","द्विविस्थापन"],a:0},
+{q:"2KClO₃?",o:["संयोजन","अपघटन","विस्थापन","दहन"],a:1},
+{q:"रासायनिक परिवर्तन?",o:["वही","नया","कुछ नहीं","ताप"],a:1}
+];
+
+let index=0, score=0, time=30, timer;
+
+function startQuiz(){
+let name=document.getElementById("name").value;
+let city=document.getElementById("city").value;
+
+if(name=="" || city==""){
+alert("Name & City डालो");
+return;
+}
+
+loadQuestion();
+startTimer();
+}
+
+function loadQuestion(){
+let q=quizData[index];
+let html=`<p>${index+1}. ${q.q}</p>`;
+q.o.forEach((opt,i)=>{
+html+=`<label class="option"><input type="radio" name="opt" value="${i}"> ${opt}</label>`;
+});
+document.getElementById("questionBox").innerHTML=html;
+time=30;
+}
+
+function nextQuestion(){
+let sel=document.querySelector('input[name="opt"]:checked');
+if(sel && parseInt(sel.value)===quizData[index].a) score++;
+
+index++;
+if(index>=quizData.length){
+clearInterval(timer);
+document.getElementById("result").innerHTML=
+`🎉 Score: ${score}/50`;
+return;
+}
+loadQuestion();
+}
+
+function startTimer(){
+timer=setInterval(()=>{
+document.getElementById("timer").innerText="Time Left: "+time;
+time--;
+if(time<0) nextQuestion();
+},1000);
+}
+
+</script>
+
+</body>
+</html>
