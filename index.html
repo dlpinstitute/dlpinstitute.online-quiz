@@ -22,7 +22,7 @@ body {
 .quiz-container {
     background: #fff;
     color: #000;
-    max-width: 700px;
+    max-width: 750px;
     margin: 30px auto;
     padding: 25px;
     border-radius: 15px;
@@ -35,11 +35,13 @@ body {
     border-radius: 8px;
 }
 button {
-    background: #1e3c72;
-    color: white;
-    padding: 10px;
+    padding: 10px 20px;
+    margin: 5px;
     border: none;
+    background: #1e3c72;
+    color: #fff;
     border-radius: 8px;
+    cursor: pointer;
 }
 #timer { color: red; font-weight: bold; }
 </style>
@@ -59,7 +61,11 @@ button {
 <button onclick="startQuiz()">Start Quiz</button>
 
 <div id="timer"></div>
-<button onclick="nextQuestion()">Next</button>
+<div id="progress"></div>
+<div id="questionBox"></div>
+
+<button onclick="prevQuestion()">Previous</button> <button onclick="nextQuestion()">Next</button>
+
 <div id="result"></div>
 
 </div>
@@ -128,50 +134,71 @@ const quizData = [
 {q:"रासायनिक परिवर्तन?",o:["वही","नया","कुछ नहीं","ताप"],a:1}
 ];
 
-let index=0, score=0, time=30, timer;
+let index=0;
+let answers=new Array(quizData.length).fill(null);
+let totalTime=1500;
 
 function startQuiz(){
-let name=document.getElementById("name").value;
-let city=document.getElementById("city").value;
-
-if(name=="" || city==""){
+if(document.getElementById("name").value==""||document.getElementById("city").value==""){
 alert("Name & City डालो");
 return;
 }
-
 loadQuestion();
 startTimer();
 }
 
 function loadQuestion(){
 let q=quizData[index];
-let html=`<p>${index+1}. ${q.q}</p>`;
+document.getElementById("progress").innerText=`Question ${index+1}/50`;
+let html=`<p>${q.q}</p>`;
 q.o.forEach((opt,i)=>{
-html+=`<label class="option"><input type="radio" name="opt" value="${i}"> ${opt}</label>`;
+html+=`<label class="option">
+<input type="radio" name="opt" value="${i}" ${answers[index]==i?"checked":""}> ${opt}</label>`;
 });
 document.getElementById("questionBox").innerHTML=html;
-time=30;
 }
 
 function nextQuestion(){
-let sel=document.querySelector('input[name="opt"]:checked');
-if(sel && parseInt(sel.value)===quizData[index].a) score++;
-
+saveAnswer();
+if(index<quizData.length-1){
 index++;
-if(index>=quizData.length){
-clearInterval(timer);
-document.getElementById("result").innerHTML=
-`🎉 Score: ${score}/50`;
-return;
-}
 loadQuestion();
+}else{
+submitQuiz();
+}
+}
+
+function prevQuestion(){
+saveAnswer();
+if(index>0){
+index--;
+loadQuestion();
+}
+}
+
+function saveAnswer(){
+let sel=document.querySelector('input[name="opt"]:checked');
+if(sel) answers[index]=parseInt(sel.value);
+}
+
+function submitQuiz(){
+let score=0;
+answers.forEach((ans,i)=>{
+if(ans===quizData[i].a) score++;
+});
+document.getElementById("result").innerHTML=`🎉 Score: ${score}/50`;
 }
 
 function startTimer(){
-timer=setInterval(()=>{
-document.getElementById("timer").innerText="Time Left: "+time;
-time--;
-if(time<0) nextQuestion();
+let timer=setInterval(()=>{
+let min=Math.floor(totalTime/60);
+let sec=totalTime%60;
+document.getElementById("timer").innerText=`Time Left: ${min}:${sec<10?"0"+sec:sec}`;
+totalTime--;
+if(totalTime<0){
+clearInterval(timer);
+submitQuiz();
+}
 },1000);
 }
 
